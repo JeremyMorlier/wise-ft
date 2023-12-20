@@ -2,7 +2,7 @@ import torch
 import copy
 
 import clip.clip as clip
-
+import open_clip
 from src.models import utils
 
 
@@ -10,17 +10,18 @@ class ImageEncoder(torch.nn.Module):
     def __init__(self, args, keep_lang=False):
         super().__init__()
 
-        self.model, self.train_preprocess, self.val_preprocess = clip.load(
-            args.model, args.device, jit=False)
+        self.model, self.train_preprocess, self.val_preprocess = open_clip.create_model_and_transforms(
+            args.model)
         
-        self.cache_dir = args.cache_dir
-
+        self.model.visual.load_state_dict(torch.load(args.load, map_location=args.device))
+        self.model.visual = self.model.visual.to(args.device)
+        
         if not keep_lang and hasattr(self.model, 'transformer'):
             delattr(self.model, 'transformer')
 
     def forward(self, images):
         assert self.model is not None
-        return self.model.encode_image(images)
+        return self.model.visual(images)
 
     def save(self, filename):
         print(f'Saving image encoder to {filename}')
