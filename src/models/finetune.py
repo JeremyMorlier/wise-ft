@@ -15,6 +15,7 @@ from src.models.utils import cosine_lr, torch_load, LabelSmoothing
 
 import src.datasets as datasets
 
+from torchvision.transforms import v2
 
 def finetune(args):
     assert args.load is not None, "Please provide the patch to a checkpoint through --load."

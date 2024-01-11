@@ -13,6 +13,9 @@ class ImageEncoder(torch.nn.Module):
         self.model, self.train_preprocess, self.val_preprocess = open_clip.create_model_and_transforms(
             args.model)
         
+        # print(torch.load(args.load, map_location=args.device))
+        # print("test")
+        # print(self.model.visual)
         self.model.visual.load_state_dict(torch.load(args.load, map_location=args.device))
         self.model.visual = self.model.visual.to(args.device)
         
